@@ -6,10 +6,18 @@ description: >
   "ponytail impact".
 ---
 
-# Ponytail Gain
+# Ponytail 实测收益
 
 Display this scoreboard when invoked. One-shot: do NOT change mode, write flag
 files, or persist anything.
+
+Respect the user's scope, language and format, and applicable project rules.
+Default to Chinese. Read and report only; do not add test files or ledgers
+unless explicitly requested. Necessary tests, checks and builds must respect
+authorization and project restrictions; inspect side effects first. Do not
+start frontend or backend development services without an explicit request.
+Do not run code-map tools by default. Before Git or SVN commands, confirm the
+repository type and root.
 
 The figures are the published agentic benchmark of Ponytail 5: headless Claude
 Code (Opus 5.5, default effort) on 39 tasks (feature tickets in a real FastAPI +
@@ -19,24 +27,24 @@ for correctness and safety. Each figure is the geometric mean of the per-task
 medians. They are measured, not computed from the current repo.
 Source: `benchmarks/results/2026-10-07-agentic.md` and the README.
 
-## Scoreboard
+## 实测数据
 
 Render plain ASCII bars. The bar length shows ponytail as a share of the
 no-skill baseline; the label carries the exact figure:
 
 ```
-  ponytail gain           benchmark · 39 tasks × 5 runs · Opus 5.5
+  Ponytail 实测收益       基准测试 · 39 项任务 × 5 次运行 · Opus 5.5
 
-  no-skill        ████████████████████  100%
-  Lines of code   █████████···········   47%   ▼ 53%
-  Output tokens   ███████████·········   55%   ▼ 45%
-  Cost            ███████████████·····   74%   ▼ 26%
-  Time            ████████████········   59%   ▼ 41%
-  Hidden checks passed   97%  (no-skill 96%)
-  Tests where the logic needs one   98%  (no-skill 68%)
+  无技能基线      ████████████████████  100%
+  代码行数        █████████···········   47%   ▼ 53%
+  输出词元        ███████████·········   55%   ▼ 45%
+  成本            ███████████████·····   74%   ▼ 26%
+  时间            ████████████········   59%   ▼ 41%
+  隐藏检查通过率   97%（无技能基线 96%）
+  需要测试的逻辑有测试覆盖   98%（无技能基线 68%）
 
-  This repo:  /ponytail-debt  (shortcuts you deferred)
-              /ponytail-audit (what's still cuttable)
+  当前仓库： /ponytail-debt （已记录的简化取舍）
+             /ponytail-audit（仍可精简的内容）
 ```
 
 ## Honesty boundary

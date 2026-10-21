@@ -39,9 +39,9 @@ test('every registered command ships an OpenCode .opencode/command/*.md', () => 
   }
 });
 
-// /ponytail-debt documents one grep for the whole tree, shipped in four copies.
+// /ponytail-debt documents one scoped search, shipped in four copies.
 // It missed C-style /* ponytail: */ block comments (#810), so the ledger silently
-// skipped every C/Java/CSS marker. Feed each shipped expression to real grep
+// skipped every C/Java/CSS marker. Feed each shipped expression to real rg
 // rather than restating it here: a copied regex only tests the copy.
 const debtCopies = [
   'skills/ponytail-debt/SKILL.md',
@@ -65,30 +65,33 @@ test('every ponytail-debt copy greps #, // and /* markers but not prose', (t) =>
   const expected = debtSamples.flatMap(([line, hit], i) => (hit ? [`${i + 1}:${line}`] : []));
 
   for (const rel of debtCopies) {
-    const documented = fs.readFileSync(path.join(root, rel), 'utf8').match(/git grep [^']*-nE '([^']+)'/);
-    assert.ok(documented, `${rel} no longer documents a git grep ... -nE '<pattern>'`);
+    const documented = fs.readFileSync(path.join(root, rel), 'utf8').match(/\brg -n [^\n]*?'(\(#\|[^']+)'/);
+    assert.ok(documented, `${rel} no longer documents an rg -n ... '<pattern>'`);
 
-    const result = spawnSync('grep', ['-nE', documented[1]], { input, encoding: 'utf8', timeout: 5000 });
+    const result = spawnSync('rg', ['-n', documented[1]], { input, encoding: 'utf8', timeout: 5000 });
     if (result.error) {
-      if (result.error.code === 'ENOENT') return t.skip('grep not available on this platform');
+      if (result.error.code === 'ENOENT') return t.skip('rg not available on this platform');
       throw result.error;
     }
-    assert.equal(result.status, 0, `grep failed for ${rel}: ${result.stderr}`);
+    assert.equal(result.status, 0, `rg failed for ${rel}: ${result.stderr}`);
     assert.deepEqual(result.stdout.split('\n').filter(Boolean), expected, `${rel} misses or over-matches markers`);
   }
 });
 
-// The full documented command must skip .git and whatever .gitignore ignores, in any stack (#948, #1100).
-test('the ponytail-debt scan skips .git and ignored dirs like node_modules, dist, build and .next', (t) => {
-  const cmd = fs.readFileSync(path.join(root, 'skills/ponytail-debt/SKILL.md'), 'utf8').match(/`(git grep [^`]+)`/)[1];
-  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'ponytail-debt-'));
-  for (const sub of ['src', '.git', 'node_modules/pkg', 'dist', 'build', '.next']) {
-    fs.mkdirSync(path.join(dir, sub), { recursive: true });
-    fs.writeFileSync(path.join(dir, sub, 'a.js'), '// ponytail: marker\n');
-  }
-  fs.writeFileSync(path.join(dir, '.gitignore'), 'node_modules/\ndist/\nbuild/\n.next/\n');
-  const result = spawnSync('sh', ['-c', cmd], { cwd: dir, encoding: 'utf8', timeout: 5000 });
-  fs.rmSync(dir, { recursive: true, force: true });
-  if (result.error || result.status === 127) return t.skip(`sh/git not available: ${result.error ? result.error.code : result.stderr}`);
-  assert.deepEqual(result.stdout.split('\n').filter(Boolean), ['src/a.js:1:// ponytail: marker']);
-});
+// Git and SVN workspaces must both exclude metadata, dependencies and ignored output.
+for (const metadata of ['.git', '.svn']) {
+  test(`the ponytail-debt scan respects exclusions and ignore files in a ${metadata} workspace`, (t) => {
+    const cmd = fs.readFileSync(path.join(root, 'skills/ponytail-debt/SKILL.md'), 'utf8').match(/`(rg -n [^`]+)`/)[1];
+    const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'ponytail-debt-'));
+    t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+    for (const sub of ['src', metadata, `nested/${metadata}`, 'node_modules/pkg', 'nested/node_modules/pkg', 'dist', 'build', '.next']) {
+      fs.mkdirSync(path.join(dir, sub), { recursive: true });
+      fs.writeFileSync(path.join(dir, sub, 'a.js'), '// ponytail: marker\n');
+    }
+    fs.writeFileSync(path.join(dir, '.gitignore'), 'dist/\nbuild/\n.next/\n');
+    const result = spawnSync('sh', ['-c', cmd], { cwd: dir, encoding: 'utf8', timeout: 5000 });
+    if (result.error || result.status === 127) return t.skip(`sh/rg not available: ${result.error ? result.error.code : result.stderr}`);
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(result.stdout.split('\n').filter(Boolean).map(line => line.replace(/^\.\//, '')), ['src/a.js:1:// ponytail: marker']);
+  });
+}

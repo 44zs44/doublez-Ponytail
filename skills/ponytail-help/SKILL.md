@@ -5,72 +5,83 @@ description: >
   Use for /ponytail-help, "ponytail help", "how do I use ponytail".
 ---
 
-# Ponytail Help
+# Ponytail 帮助
 
 Display this reference card when invoked. One-shot, do NOT change mode,
 write flag files, or persist anything.
 
-## Levels
+Respect the user's scope, language and format, and applicable project rules.
+Default to Chinese. Do not add test files or ledgers unless explicitly requested.
+Necessary tests, checks and builds must respect authorization and project
+restrictions; inspect side effects first. Do not start frontend or backend
+development services without an explicit request. Do not run code-map tools
+by default. Before Git or SVN commands, confirm the repository type and root.
 
-| Level | Trigger | What change |
+## 模式
+
+| 模式 | 命令 | 行为 |
 |-------|---------|-------------|
-| **Lite** | `/ponytail lite` | Build what was asked, name the smaller option in one line. |
-| **Full** | `/ponytail` | The smallest complete change, risk-based checks, and a reply that names only material verification limits or risks. Default. |
-| **Ultra** | `/ponytail ultra` | Also questions the request and pushes back before building. |
+| **Lite** | `/ponytail lite` | 完成已授权需求，用一句话提示更小方案，不阻塞实施。 |
+| **Full** | `/ponytail` | 默认模式：最小完整改动，按风险验证，只说明重要验证限制或风险。 |
+| **Ultra** | `/ponytail ultra` | 检查需求假设并提示更小方案，不阻塞明确且已授权的工作。 |
 
-Level sticks until changed or session end.
+模式保持到再次切换或会话结束。任何模式都不能覆盖用户范围和项目规则。
+常规选择直接处理；仅当未解决的歧义实质影响需求、数据处理或公共契约时确认。
 
-## Skills
+## 技能
 
-| Skill | Trigger | What it does |
+| 技能 | 命令 | 用途 |
 |-------|---------|--------------|
-| **ponytail** | `/ponytail` | Lazy mode itself: least new code, clear replies that name material limits or risks. |
-| **ponytail-review** | `/ponytail-review` | Quality review of a diff: bugs, security, load, missing tests, speed, what to cut. Each finding says what goes wrong and how to fix it. |
-| **ponytail-audit** | `/ponytail-audit` | The same quality review for the whole repo, ranked. |
-| **ponytail-debt** | `/ponytail-debt` | Harvest `shortcut:` comments into a tracked ledger. |
-| **ponytail-gain** | `/ponytail-gain` | Measured-impact scoreboard: less code, less cost, more speed. |
-| **ponytail-help** | `/ponytail-help` | This card. |
+| **ponytail** | `/ponytail` | 用最少必要改动完成任务，明确重要限制或风险。 |
+| **ponytail-review** | `/ponytail-review` | 只读审查改动的正确性、安全、负载、验证缺口、性能和冗余，说明证据及修复建议。 |
+| **ponytail-audit** | `/ponytail-audit` | 只读审查指定范围或整个仓库，按重要性列出发现。 |
+| **ponytail-debt** | `/ponytail-debt` | 汇总 `shortcut:` 注释；默认只输出，不创建台账文件。 |
+| **ponytail-gain** | `/ponytail-gain` | 展示基准测试测得的代码量、成本和时间变化。 |
+| **ponytail-help** | `/ponytail-help` | 显示本帮助。 |
 
-In Codex CLI and the IDE extension, invoke skills with `$ponytail:ponytail`,
-`$ponytail:ponytail-review`, or `$ponytail:ponytail-help`. Claude Code and OpenCode use the
-slash-command forms above (OpenCode ships all six as slash commands).
+在 Codex CLI 和 IDE 扩展中，使用 `$ponytail:ponytail`、
+`$ponytail:ponytail-review` 或 `$ponytail:ponytail-help` 调用技能。
+Claude Code 和 OpenCode 使用上面的斜杠命令；OpenCode 提供全部六个命令。
 
-## Deactivate
+## 停用
 
-Say "stop ponytail" or "normal mode". Resume anytime with `/ponytail`.
-`/ponytail off` also works.
+说“stop ponytail”或“normal mode”，也可使用 `/ponytail off` 停用。
+随时用 `/ponytail` 恢复。
 
-## Band (Claude Code)
+## 状态栏（Claude Code）
 
-`/ponytail band` hides the band above the prompt, the same command brings it back.
-`/ponytail band on` and `/ponytail band off` set it directly. The level stays.
-`/ponytail band import` adds your past Claude Code sessions (cost, agent time, tokens) to the board.
+`/ponytail band` 切换提示框上方状态栏的显示。
+`/ponytail band on` 和 `/ponytail band off` 直接设置显示状态，不改变模式。
+`/ponytail band import` 将历史 Claude Code 会话的成本、代理用时和词元导入面板。
 
-## Configure Default Mode
+## 配置默认模式
 
-Default mode = `full`, auto-active every session. Change it:
+默认模式为 `full`，每次会话自动启用。以下是修改方式，仅供展示，不在帮助调用中执行：
 
-**Environment variable** (highest priority):
+**环境变量**（最高优先级）：
 ```bash
 export PONYTAIL_DEFAULT_MODE=ultra
 ```
 
-**Config file** (`~/.config/ponytail/config.json`, Windows: `%APPDATA%\ponytail\config.json`):
+**配置文件**（`~/.config/ponytail/config.json`，Windows：`%APPDATA%\ponytail\config.json`）：
 ```json
 { "defaultMode": "lite" }
 ```
 
-Set `"off"` to disable auto-activation on session start, activate manually
-with `/ponytail` when wanted.
+设置为 `"off"` 可关闭会话开始时自动启用，需要时用 `/ponytail` 手动启用。
 
-Resolution: env var > config file > `full`.
+优先级：环境变量 > 配置文件 > `full`。
 
-## Update
+## 更新
 
-Enable auto-update once: open `/plugin`, go to Marketplaces, pick ponytail, Enable auto-update. Claude Code then pulls new versions at startup (run `/reload-plugins` when it prompts). Manual refresh: `/plugin marketplace update ponytail` then `/reload-plugins`.
+启用自动更新：打开 `/plugin`，进入 Marketplaces，选择 ponytail 并启用自动更新。
+Claude Code 随后会在启动时获取新版本，提示时运行 `/reload-plugins`。
+手动更新：先运行 `/plugin marketplace update ponytail`，再运行 `/reload-plugins`。
 
-If `/plugin` is not recognized, your Claude Code is out of date. Update it (`npm install -g @anthropic-ai/claude-code@latest`, or `brew upgrade claude-code`) and restart. Other hosts use their own update flow.
+若当前 Claude Code 版本不支持 `/plugin`，按其安装方式更新并重启；
+例如 `npm install -g @anthropic-ai/claude-code@latest` 或 `brew upgrade claude-code`。
+其他宿主使用各自的更新流程。此帮助仅展示方法，不执行更新。
 
-## More
+## 更多
 
-Full docs + examples: https://github.com/DietrichGebert/ponytail
+完整文档与示例：https://github.com/DietrichGebert/ponytail

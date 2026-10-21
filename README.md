@@ -133,7 +133,11 @@ The ladder runs *after* it understands the problem, not instead of it: it reads 
 
 Lazy, not negligent: trust-boundary validation, data-loss handling, security, accessibility, required compatibility, performance and behavior are never on the chopping block.
 
-Choose checks by risk and existing coverage. Authorized behavior changes get a focused regression only when they leave a real coverage gap, and checks required by the task or project still apply. Replies name only the material verification limits or risks you need to know.
+Choose checks by risk and existing coverage. Authorized edits include necessary static checks and frontend/backend compilation or builds, subject to project command restrictions. Respect test-execution limits; update existing regressions only for real coverage gaps, and create test files only when explicitly requested. Starting frontend or backend development services requires an explicit user request; permission to build or verify is not permission to start a service.
+
+Replies default to Chinese unless the user explicitly requests another language or format. Fix bugs at the layer where the root cause belongs; change shared implementations only when their common contract is demonstrably wrong. Required interface comments are preserved, and a `shortcut:` comment never exempts a real defect from review.
+
+The startup codebase map is disabled by default. Set `PONYTAIL_MAP=1` explicitly to enable it only where the project's source-reading rules permit startup scanning; `0`, an empty value, and an unset variable keep it off.
 
 ## The prompt
 

@@ -43,7 +43,14 @@ for (const [relPath, normalize] of copies) {
 // Upgrade path: generate the copies from SKILL.md if this ever misses a real drift.
 const INVARIANTS = [
   'in this codebase',                      // ladder rung: reuse what already exists (#217)
-  'grep every caller',                     // root-cause bug fix (#245)
+  'inspect every caller',                  // root-cause bug fix (#245)
+  'fix the root cause at the layer where it actually belongs',
+  'common contract is demonstrably wrong',
+  'Respond in Chinese',
+  'Confirm the repository type and root',
+  'Do not run the codebase map by default',
+  'Do not start frontend or backend development services unless explicitly requested by the user.',
+  'Do not create test files or summary documents unless explicitly requested.',
   'never about the change itself',         // scope: callers, tests and fixtures the change breaks
   'shortcut: <the limit>, <when to upgrade>',   // shortcut marker comment
   'correct on edge cases',                 // robust-variant rule
@@ -64,7 +71,16 @@ const INVARIANTS = [
 ];
 
 const skill = read('skills/ponytail/SKILL.md');
-const sources = [['skills/ponytail/SKILL.md', skill], ['AGENTS.md', agents]];
+const { getFallbackInstructions } = require('../hooks/ponytail-instructions');
+const fallback = getFallbackInstructions('full');
+const sources = [['skills/ponytail/SKILL.md', skill], ['AGENTS.md', agents], ['hooks/ponytail-instructions.js fallback', fallback]];
+
+// The fallback must not silently restore obsolete behavior when the skill is unavailable.
+const bodyStart = 'You are a lazy senior developer.';
+if (fallback.slice(fallback.indexOf(bodyStart)).trim() !== canonical.slice(canonical.indexOf(bodyStart)).trim()) {
+  console.error('hooks/ponytail-instructions.js fallback drifted from AGENTS.md');
+  failed = true;
+}
 for (const phrase of INVARIANTS) {
   for (const [label, text] of sources) {
     if (!text.includes(phrase)) {
@@ -79,4 +95,4 @@ if (failed) {
   process.exit(1);
 }
 
-console.log(`Rule copies match AGENTS.md; ${INVARIANTS.length} rule invariants present in SKILL.md and AGENTS.md.`);
+console.log(`Rule copies and fallback match AGENTS.md; ${INVARIANTS.length} rule invariants present in all core sources.`);
