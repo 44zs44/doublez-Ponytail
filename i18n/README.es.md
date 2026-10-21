@@ -129,9 +129,9 @@ En Claude Code, ponytail ahora muestra una barra encima del prompt: cuánto cues
 
 La escalera corre *después* de entender el problema, no en su lugar: lee el código que toca el cambio y sigue el flujo real antes de elegir un peldaño. Perezoso con la solución, nunca con la lectura.
 
-Perezoso, no negligente: la validación en los límites de confianza, el manejo de pérdida de datos, la seguridad y la accesibilidad nunca se recortan.
+Perezoso, no negligente: la validación en los límites de confianza, el manejo de pérdida de datos, la seguridad, la accesibilidad y la compatibilidad, el rendimiento y el comportamiento exigidos por la tarea o el proyecto nunca se recortan.
 
-La lógica con una rama, un bucle, un parser, dinero o seguridad deja un test pequeño. Cada respuesta termina con lo que se saltó o no se comprobó y cualquier riesgo que debas conocer.
+Elige las comprobaciones según el riesgo y la cobertura existente. Cuando la edición está autorizada, añade o actualiza una prueba de regresión concreta solo si un cambio de comportamiento deja una brecha real; las comprobaciones exigidas por la tarea o el proyecto siguen aplicando. Cada respuesta termina indicando solo los límites de verificación o riesgos materiales que el usuario deba conocer.
 
 ## El prompt
 
